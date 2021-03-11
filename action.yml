@@ -23,6 +23,10 @@ inputs:
     description: "IBM Cloud Space"
     required: false
     default: "dev"
+  manifest_name:
+    description: "Name of the manifest file"
+    required: false
+    default: "manifest.yml"
   working-directory:
     description: "Working directory that contains a Dockerfile"
     required: false
@@ -40,25 +44,25 @@ runs:
     
     - id: install-plugin-cf
       name: Install CF plugin
-        run: ibmcloud cf install -f
-        shell: bash
+      run: ibmcloud cf install -f
+      shell: bash
 
     - id: login-to-ibmcloud-cli
       run: |
-        ibmcloud login --apikey "$IBM_CLOUD_API" -r "$IBM_CLOUD_REGION" -g "$IBM_CLOUD_GROUP"
+        ibmcloud login --apikey "${{ inputs.ibm-cloud-api-key }}" -r "${{ inputs.ibm-cloud-region }}" -g "${{ inputs.ibm-cloud-resource-group }}"
       shell: bash
     
     - id: target-cf
       name: Target CF
-        run: ibmcloud target --cf-api https://api.$IBM_CLOUD_REGION.cf.cloud.ibm.com -r $IBM_CLOUD_REGION -o $IBM_CLOUD_ORG -s $IBM_CLOUD_SPACE
-        shell: bash
+      run: ibmcloud target --cf-api https://api.${{ inputs.ibm-cloud-region }}.cf.cloud.ibm.com -r ${{ inputs.ibm-cloud-region }} -o ${{ inputs.ibm-cloud-org}} -s ${{ inputs.ibm-cloud-space }}
+      shell: bash
     
     - id: list-all-apps
       name: List all applications
-        run: ibmcloud cf apps
-        shell: bash
+      run: ibmcloud cf apps
+      shell: bash
 
     - id: deploy-manifest
       name: Deploy manifest file
-      run: ibmcloud cf push -f ./$MANIFEST_NAME
+      run: ibmcloud cf push -f manifest.yml
       shell: bash
